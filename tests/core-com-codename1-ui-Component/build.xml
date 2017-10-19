@@ -24,6 +24,7 @@
             encoding="${source.encoding}"
             source="1.8"
             target="1.8"
+            debug="true"
             bootclasspath="CLDC11.jar" excludes="${excludes}"
             classpath="${javac.classpath}:${build.classes.dir}">
             <src path="${test.src.dir}"/>
@@ -53,6 +54,7 @@
             encoding="${source.encoding}"
             source="1.8"
             target="1.8"
+            debug="true"
             bootclasspath="lib/CLDC11.jar" excludes="${excludes}"
             classpath="${javac.classpath}:${build.classes.dir}">
             <src path="${src.dir}"/>
@@ -477,6 +479,7 @@
             encoding="${source.encoding}"
             source="1.8"
             target="1.8"
+            debug="true"
             bootclasspath="CLDC11.jar" excludes="${excludes}"
             classpath="${javac.classpath}:${build.classes.dir}">
             <src path="native/javase"/>

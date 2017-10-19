@@ -5,3 +5,6 @@ build
 dist
 private
 CodenameOne_SRC.zip
+lib
+lib*
+*.jar.bak*
