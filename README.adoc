@@ -36,10 +36,10 @@ This would run the unit tests against version 3.6.
 [source,bash]
 ----
 $ cd cn1-unit-tests
-$ cn1 test --cn1Sources=/path/to/codenameone
+$ cn1 test -cn1Sources=/path/to/codenameone
 ----
 
-Note that the `--cn1Sources` path should point to the parent directory corresponding to the https://github.com/codenameone/CodenameOne[Codename One GIT repository], so it should
+Note that the `-cn1Sources` path should point to the parent directory corresponding to the https://github.com/codenameone/CodenameOne[Codename One GIT repository], so it should
 have subdirectories `CodenameOne`, `Ports`, etc...
 
 == Running Against Specific Codename One Jar versions
@@ -47,9 +47,9 @@ have subdirectories `CodenameOne`, `Ports`, etc...
 [source,bash]
 ----
 $ cd cn1-unit-tests
-$ cn1 test --seJar=/path/to/JavaSE.jar \
-           --cn1Jar=/path/to/CodenameOne.jar \
-           --cldcJar=/path/to/CLDC11.jar
+$ cn1 test -seJar /path/to/JavaSE.jar \
+           -cn1Jar /path/to/CodenameOne.jar \
+           -cldcJar /path/to/CLDC11.jar
 ----
 
 == Error Reports and Verbose Logging
