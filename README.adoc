@@ -22,6 +22,15 @@ $ cn1 test
 
 This will run all the unit tests.
 
+== Running Against Specific Codename One Releases
+
+[source,bash]
+----
+$ cn1 test -version 3.6
+----
+
+This would run the unit tests against version 3.6.
+
 == Running Against Codename One Sources
 
 [source,bash]
