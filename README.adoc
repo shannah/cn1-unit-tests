@@ -1,0 +1,78 @@
+== Codename One Unit Tests
+
+This repository stores a collection of unit test for https://www.codenameone.com[Codename One].
+
+== Quick Start
+
+Install the latest Codename One CLI tools
+
+[source,bash]
+----
+$ sudo npm install -g codenameone-cli
+----
+
+Clone this repo
+
+[source,bash]
+----
+$ git clone https://github.com/shannah/cn1-unit-tests
+$ cd cn1-unit-tests
+$ cn1 test
+----
+
+This will run all the unit tests.
+
+== Running Against Specific Codename One Releases
+
+[source,bash]
+----
+$ cn1 test -version 3.6
+----
+
+This would run the unit tests against version 3.6.
+
+== Running Against Codename One Sources
+
+[source,bash]
+----
+$ cd cn1-unit-tests
+$ cn1 test --cn1Sources=/path/to/codenameone
+----
+
+Note that the `--cn1Sources` path should point to the parent directory corresponding to the https://github.com/codenameone/CodenameOne[Codename One GIT repository], so it should
+have subdirectories `CodenameOne`, `Ports`, etc...
+
+== Running Against Specific Codename One Jar versions
+
+[source,bash]
+----
+$ cd cn1-unit-tests
+$ cn1 test --seJar=/path/to/JavaSE.jar \
+           --cn1Jar=/path/to/CodenameOne.jar \
+           --cldcJar=/path/to/CLDC11.jar
+----
+
+== Error Reports and Verbose Logging
+
+Use the `-e` flag to show the stack trace when a test fails.  Use the `-v` flag to show verbose logging.
+
+Use the `s` flag to stop on errors.
+
+== More Options
+
+For more information about the `cn1 test` command, see https://github.com/shannah/codenameone-cli/wiki/test[its wiki page].
+
+== Adding Your Own Tests
+
+This is a community project, so it is my hope that others will add their own tests.  You can add tests in 2 ways.  Begin by forking this project.  Then:
+
+1. Add a unit test to an existing project within the tests directory.  Adding a unit test to an existing project is easy.  Simply add a class which implements `com.codename1.testing.UnitTest` or extends `com.codename1.testing.AbstractTest` to the project's "tests" directory and implement the appropriate methods.  See https://www.codenameone.com/blog/test-it.html[this blog post] for more information or the https://www.codenameone.com/javadoc/com/codename1/testing/package-summary.html[javadocs for the testing package].
+2. Create a new Codename One project containing your own unit tests inside the "tests" directory, and add it to the repository.  Then add an entry to the tests.xml file to reference your project. E.g.  If your project is named "MyUnitTests", then you would add a `<test>` tag to the tests.xml file inside the root `<tests>` tag:
++
+[source,xml]
+----
+<test path="tests/MyUnitTests"/>
+----
+
+Once you have finished your changes, you should commit a pull request to have them merged into the master branch.
+
