@@ -5,12 +5,15 @@
  */
 package com.codename1.ui;
 
+import com.codename1.components.InteractionDialog;
 import com.codename1.components.ToastBar;
 import com.codename1.maps.Coord;
 import com.codename1.testing.AbstractTest;
 import com.codename1.testing.TestUtils;
+import static com.codename1.ui.ComponentSelector.$;
 import com.codename1.ui.events.ActionEvent;
 import com.codename1.ui.layouts.BorderLayout;
+import com.codename1.ui.layouts.BoxLayout;
 import com.codename1.ui.layouts.LayeredLayout;
 
 /**
@@ -34,10 +37,12 @@ public class TestComponent extends AbstractTest {
     
     
     private void getComponentAt_int_int() {
+        testNestedScrollingLabels();
         getComponentAt_int_int_button();
         getComponentAt_int_int_label();
         getComponentAt_int_int_container();
         getComponentAt_int_int_browsercomponent();
+        
     }
     
     
@@ -75,8 +80,39 @@ public class TestComponent extends AbstractTest {
         
     }
     
-    
-    
+    private void testNestedScrollingLabels() {
+        int w = Display.getInstance().getDisplayWidth();
+        int h = Display.getInstance().getDisplayHeight();
+        Form f = new Form("Scrolling Labels");
+        Toolbar tb = new Toolbar();
+        f.setToolbar(tb);
+        final Form backForm = Display.getInstance().getCurrent();
+        tb.addCommandToSideMenu(new Command("Back") {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (backForm != null) {
+                    backForm.showBack();
+                }
+            }
+        });
+        f.setTitle("Scrolling Labels");
+        Container cnt = new Container(BoxLayout.y());
+        cnt.setScrollableY(true);
+        for (String l : new String[]{"Red", "Green", "Blue", "Orange", "Indigo"}) {
+            for (int i=0; i<20; i++) {
+                cnt.add(l+i);
+            }
+        }
+        
+        f.setLayout(new BorderLayout());
+        f.add(BorderLayout.CENTER, LayeredLayout.encloseIn(new Button("Press me"), BorderLayout.center(BorderLayout.center(cnt))));
+        f.show();
+        
+        TestUtils.waitForFormTitle("Scrolling Labels");
+        Component res = f.getComponentAt(w/2, h/2);
+        assertTrue(res == cnt || res.getParent() == cnt, "getComponentAt(x,y) should return scrollable container on top of button when in layered pane.");
+        
+    }
     
     private void getComponentAt_int_int_container() {
         int w = Display.getInstance().getDisplayWidth();
@@ -115,10 +151,24 @@ public class TestComponent extends AbstractTest {
         Component middleComponent = mapDemo.getComponentAt(w/2, h/2);
         assertTrue(mc == middleComponent || mc.contains(middleComponent),  "Wrong component found in middle. Expected "+mc+" but found "+middleComponent);
     
-        tb.showToolbar();
-        TestUtils.waitFor(500);
-        Component res = mapDemo.getComponentAt(10, h/2);
-        assertTrue(tb.contains(res), "Toolbar is open so getComponentAt() should return something on the toolbar.  But received "+res+".  Toolbar is "+tb);
+        tb.openSideMenu();
+        TestUtils.waitFor(500); // wait for side menu to open
+        
+        Component res = null;
+        
+        res = tb.getComponentAt(10, h/2);
+        
+        //System.out.println("tb size = "+tb.getAbsoluteX()+", "+tb.getAbsoluteY()+", "+tb.getWidth()+", "+tb.getHeight());
+        //System.out.println("mb size = "+tb.getMenuBar().getAbsoluteX()+", "+tb.getMenuBar().getAbsoluteY()+", "+tb.getMenuBar().getWidth()+", "+tb.getMenuBar().getHeight());
+        //System.out.println("res is "+res);
+        res = mapDemo.getComponentAt(10, h/2);
+        
+        // Let's find the interaction dialog on the form
+        Component interactionDialog = $("*", mapDemo).filter(c->{
+            return c instanceof InteractionDialog;
+        }).asComponent();
+        
+        assertTrue(((InteractionDialog)interactionDialog).contains(res), "Toolbar is open so getComponentAt() should return something on the toolbar.  But received "+res+".  Toolbar is "+tb);
     
     }
     
