@@ -27,6 +27,7 @@ public class TestComponent extends AbstractTest {
         
         
         getComponentAt_int_int();
+        List_shouldRenderSelection();
         return true;
     }
 
@@ -43,6 +44,18 @@ public class TestComponent extends AbstractTest {
         getComponentAt_int_int_container();
         getComponentAt_int_int_browsercomponent();
         
+    }
+    
+    private void List_shouldRenderSelection() {
+        com.codename1.ui.List l = new com.codename1.ui.List<>();
+        
+        // Make sure this doesn't throw a stack overflow error.
+        try {
+            l.shouldRenderSelection();
+        } catch (Throwable t) {
+            t.printStackTrace();
+            throw new RuntimeException("Error in List.shouldRenderSelection");
+        }
     }
     
     
@@ -73,7 +86,7 @@ public class TestComponent extends AbstractTest {
         f.add(BorderLayout.CENTER, l);
         
         f.show();
-        TestUtils.waitForFormTitle("My Form");
+        TestUtils.waitForFormTitle("My Form", 2000);
         Component middleComponent = f.getComponentAt(w/2, h/2);
         assertEqual(l, middleComponent, "Found wrong component");
         
@@ -108,7 +121,7 @@ public class TestComponent extends AbstractTest {
         f.add(BorderLayout.CENTER, LayeredLayout.encloseIn(new Button("Press me"), BorderLayout.center(BorderLayout.center(cnt))));
         f.show();
         
-        TestUtils.waitForFormTitle("Scrolling Labels");
+        TestUtils.waitForFormTitle("Scrolling Labels", 2000);
         Component res = f.getComponentAt(w/2, h/2);
         assertTrue(res == cnt || res.getParent() == cnt, "getComponentAt(x,y) should return scrollable container on top of button when in layered pane.");
         
@@ -123,7 +136,7 @@ public class TestComponent extends AbstractTest {
         f.add(BorderLayout.CENTER, l);
         
         f.show();
-        TestUtils.waitForFormTitle("My Form");
+        TestUtils.waitForFormTitle("My Form", 2000);
         Component middleComponent = f.getComponentAt(w/2, h/2);
         assertEqual(l, middleComponent, "Found wrong component");
     }
@@ -147,7 +160,7 @@ public class TestComponent extends AbstractTest {
         
         mapDemo.show();
         
-        TestUtils.waitForFormTitle("Maps");
+        TestUtils.waitForFormTitle("Maps", 2000);
         Component middleComponent = mapDemo.getComponentAt(w/2, h/2);
         assertTrue(mc == middleComponent || mc.contains(middleComponent),  "Wrong component found in middle. Expected "+mc+" but found "+middleComponent);
     
