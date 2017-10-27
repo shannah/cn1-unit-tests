@@ -1,4 +1,5 @@
 <?xml version="1.0"?>
 <tests>
   <test path="tests/core-com-codename1-ui-Component" since="3.7"/>
+  <test path="tests/core-com-codename1-ui-Toolbar-OnTopSideMenu" />
 </tests>
