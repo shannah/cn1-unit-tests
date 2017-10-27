@@ -5,6 +5,7 @@
  */
 package com.codename1.tests.ontopsidemenu;
 
+import com.codename1.components.ToastBar;
 import com.codename1.testing.AbstractTest;
 import com.codename1.testing.TestUtils;
 import com.codename1.ui.Command;
@@ -12,6 +13,8 @@ import com.codename1.ui.Component;
 import com.codename1.ui.FontImage;
 import com.codename1.ui.Form;
 import com.codename1.ui.Toolbar;
+import com.codename1.ui.events.ActionEvent;
+import com.codename1.ui.events.ActionListener;
 import com.codename1.ui.plaf.Style;
 
 /**
@@ -23,6 +26,7 @@ public class TestToolbar extends AbstractTest {
     @Override
     public boolean runTest() throws Exception {
         findCommandComponent();
+        testOverflowMenuNPE();
         return true;
     }
     
@@ -37,6 +41,26 @@ public class TestToolbar extends AbstractTest {
         Component res = tb.findCommandComponent(cmd);
         
         TestUtils.assertTrue(res != null, "Could not find command component added to left bar.");
+        
+    }
+    
+    /**
+     * https://github.com/codenameone/CodenameOne/issues/2255
+     */
+    public void testOverflowMenuNPE() {
+        Form hi = new Form();
+        hi.setName("testOverflowMenuNPE");
+        hi.getToolbar().addCommandToOverflowMenu("Test", FontImage.createMaterial(FontImage.MATERIAL_3D_ROTATION, new Style()), new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent evt) {
+                       ToastBar.showMessage("menu", FontImage.MATERIAL_3D_ROTATION);
+                       hi.revalidate();
+                    }
+                });
+        hi.show();
+        
+        TestUtils.waitForFormName("testOverflowMenuNPE", 2000);
+        hi.getToolbar().closeSideMenu();
         
     }
     
