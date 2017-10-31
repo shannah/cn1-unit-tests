@@ -7,6 +7,7 @@ package com.codename1.ui;
 
 import com.codename1.components.InteractionDialog;
 import com.codename1.components.ToastBar;
+import com.codename1.io.ConnectionRequest;
 import com.codename1.maps.Coord;
 import com.codename1.testing.AbstractTest;
 import com.codename1.testing.TestUtils;
@@ -15,6 +16,8 @@ import com.codename1.ui.events.ActionEvent;
 import com.codename1.ui.layouts.BorderLayout;
 import com.codename1.ui.layouts.BoxLayout;
 import com.codename1.ui.layouts.LayeredLayout;
+import java.io.IOException;
+import java.util.Map;
 
 /**
  *
@@ -28,6 +31,8 @@ public class TestComponent extends AbstractTest {
         
         getComponentAt_int_int();
         List_shouldRenderSelection();
+        testCookies();
+       
         return true;
     }
 
@@ -185,6 +190,49 @@ public class TestComponent extends AbstractTest {
     
     }
     
-    
+    private void testCookies() throws IOException {
+        String baseUrl = "http://solutions.weblite.ca/cn1tests/cookie";
+        String clearCookiesUrl = baseUrl +"/reset.php";
+        String setCookiesUrl = baseUrl + "/set.php";
+        String checkCookiesUrl = baseUrl + "/check.php";
+        String setCookiesUrlSession = baseUrl + "/set_session.php";
+        
+        // Try without native cookie store
+        ConnectionRequest.setUseNativeCookieStore(false);
+        ConnectionRequest.fetchJSON(clearCookiesUrl);
+        Map<String,Object> res = ConnectionRequest.fetchJSON(checkCookiesUrl);
+        System.out.println(res);
+        TestUtils.assertBool(null == res.get("cookieval"), "Cookie should be null after clearing cookies but was "+res.get("cookieval"));
+        ConnectionRequest.fetchJSON(setCookiesUrl);
+        res = ConnectionRequest.fetchJSON(checkCookiesUrl);
+        TestUtils.assertEqual("hello", res.get("cookieval"), "Cookie set to incorrect value.");
+        
+        // Now check that session cookies (no explicit expiry) are set correctly
+        ConnectionRequest.fetchJSON(clearCookiesUrl);
+        res = ConnectionRequest.fetchJSON(checkCookiesUrl);
+        TestUtils.assertBool(null == res.get("cookieval"), "Cookie should be null after clearing cookies but was "+res.get("cookieval"));
+        ConnectionRequest.fetchJSON(setCookiesUrlSession);
+        res = ConnectionRequest.fetchJSON(checkCookiesUrl);
+        TestUtils.assertEqual("hello", res.get("cookieval"), "Cookie set to incorrect value.");
+        
+        // Try with native cookie store
+        ConnectionRequest.setUseNativeCookieStore(true);
+        ConnectionRequest.fetchJSON(clearCookiesUrl);
+        res = ConnectionRequest.fetchJSON(checkCookiesUrl);
+        TestUtils.assertBool(null == res.get("cookieval"), "Cookie should be null after clearing cookies but was "+res.get("cookieval"));
+        ConnectionRequest.fetchJSON(setCookiesUrl);
+        res = ConnectionRequest.fetchJSON(checkCookiesUrl);
+        TestUtils.assertEqual("hello", res.get("cookieval"), "Cookie set to incorrect value.");
+
+        // Now check that session cookies (no explicit expiry) are set correctly
+        ConnectionRequest.fetchJSON(clearCookiesUrl);
+        res = ConnectionRequest.fetchJSON(checkCookiesUrl);
+        TestUtils.assertBool(null == res.get("cookieval"), "Cookie should be null after clearing cookies but was "+res.get("cookieval"));
+        ConnectionRequest.fetchJSON(setCookiesUrlSession);
+        res = ConnectionRequest.fetchJSON(checkCookiesUrl);
+        TestUtils.assertEqual("hello", res.get("cookieval"), "Cookie set to incorrect value.");
+        
+        
+    }
     
 }
