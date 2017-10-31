@@ -338,6 +338,76 @@ public class TestComponent extends AbstractTest {
         res = status.getJSONContent();
         TestUtils.assertEqual("hello", res.get("cookieval"), "Cookie set to incorrect value.");
         
+        // Now let's try to share cookies between the browser component and 
+        // a connection request.
+        
+        ConnectionRequest.setUseNativeCookieStore(true);
+        Cookie.clearCookiesFromStorage();
+        
+        BrowserComponent bc2 = new BrowserComponent();
+        bc.getParent().replace(bc, bc2, null);
+        bc = bc2;
+        f.revalidate();
+        
+        final BrowserStatus status2 = new BrowserStatus(bc);
+        bc.setURL(clearCookiesUrl);
+        status2.waitReady();
+        status2.reset();
+        
+        // First verify that the cookie is not set in either browser or connection request
+        
+        bc.setURL(checkCookiesUrl);
+        status2.waitReady();
+        res = status2.getJSONContent();
+        TestUtils.assertBool(null == res.get("cookieval"), "Cookie should be null after clearing cookies but was "+res.get("cookieval"));
+        
+        
+        res = ConnectionRequest.fetchJSON(checkCookiesUrl);
+        TestUtils.assertBool(null == res.get("cookieval"), "Cookie should be null after clearing cookies but was "+res.get("cookieval"));
+        
+        // Next let's set the cookie in the browser, and verify that it is set in both 
+        // browser and connection request.
+        status2.reset();
+        bc.setURL(setCookiesUrl);
+        status2.waitReady();
+        
+        status2.reset();
+        bc.setURL(checkCookiesUrl);
+        status2.waitReady();
+        res = status2.getJSONContent();
+        TestUtils.assertEqual("hello", res.get("cookieval"), "Cookie set to incorrect value.");
+        
+        res = ConnectionRequest.fetchJSON(checkCookiesUrl);
+        TestUtils.assertEqual("hello", res.get("cookieval"), "Cookie set to incorrect value.");
+        
+        
+        // Now let's delete the cookie in the browser and verify that it is deleted in
+        // both the browser and connection request.
+        status2.reset();
+        bc.setURL(clearCookiesUrl);
+        status2.waitReady();
+        
+        status2.reset();
+        bc.setURL(checkCookiesUrl);
+        status2.waitReady();
+        res = status2.getJSONContent();
+        TestUtils.assertBool(null == res.get("cookieval"), "Cookie should be null after clearing cookies but was "+res.get("cookieval"));
+        
+        res = ConnectionRequest.fetchJSON(checkCookiesUrl);
+        TestUtils.assertBool(null == res.get("cookieval"), "Cookie should be null after clearing cookies but was "+res.get("cookieval"));
+        
+        // Now let's set the cookie in the ConnectionRequest and verify that it is set in both
+        // connection request and browser.
+        
+        ConnectionRequest.fetchJSON(setCookiesUrl);
+        res = ConnectionRequest.fetchJSON(checkCookiesUrl);
+        TestUtils.assertEqual("hello", res.get("cookieval"), "Cookie set to incorrect value.");
+        
+        status2.reset();
+        bc.setURL(checkCookiesUrl);
+        status2.waitReady();
+        res = status2.getJSONContent();
+        TestUtils.assertEqual("hello", res.get("cookieval"), "Cookie set to incorrect value.");
         
     }
     
