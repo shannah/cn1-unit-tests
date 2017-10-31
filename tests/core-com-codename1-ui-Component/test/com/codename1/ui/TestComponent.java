@@ -8,6 +8,9 @@ package com.codename1.ui;
 import com.codename1.components.InteractionDialog;
 import com.codename1.components.ToastBar;
 import com.codename1.io.ConnectionRequest;
+import com.codename1.io.Cookie;
+import com.codename1.io.JSONParser;
+import com.codename1.io.Util;
 import com.codename1.maps.Coord;
 import com.codename1.testing.AbstractTest;
 import com.codename1.testing.TestUtils;
@@ -16,7 +19,10 @@ import com.codename1.ui.events.ActionEvent;
 import com.codename1.ui.layouts.BorderLayout;
 import com.codename1.ui.layouts.BoxLayout;
 import com.codename1.ui.layouts.LayeredLayout;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+
 import java.util.Map;
 
 /**
@@ -32,6 +38,7 @@ public class TestComponent extends AbstractTest {
         getComponentAt_int_int();
         List_shouldRenderSelection();
         testCookies();
+        testCookiesInBrowserComponent();
        
         return true;
     }
@@ -191,6 +198,7 @@ public class TestComponent extends AbstractTest {
     }
     
     private void testCookies() throws IOException {
+        Cookie.clearCookiesFromStorage();
         String baseUrl = "http://solutions.weblite.ca/cn1tests/cookie";
         String clearCookiesUrl = baseUrl +"/reset.php";
         String setCookiesUrl = baseUrl + "/set.php";
@@ -230,6 +238,104 @@ public class TestComponent extends AbstractTest {
         TestUtils.assertBool(null == res.get("cookieval"), "Cookie should be null after clearing cookies but was "+res.get("cookieval"));
         ConnectionRequest.fetchJSON(setCookiesUrlSession);
         res = ConnectionRequest.fetchJSON(checkCookiesUrl);
+        TestUtils.assertEqual("hello", res.get("cookieval"), "Cookie set to incorrect value.");
+        
+        
+    }
+    
+    private static class BrowserStatus {
+        private static final int LOADING=0;
+        private static final int READY=1;
+        int status;
+        String content;
+        final BrowserComponent bc;
+        
+        BrowserStatus(BrowserComponent bc) {
+            this.bc = bc;
+            bc.addWebEventListener("onLoad", e->{
+                ready(bc.executeAndReturnString("document.body.innerHTML"));
+            });
+        }
+        
+        synchronized void reset() {
+            content = null;
+            status = LOADING;
+        }
+        synchronized void ready(String content) {
+            status = READY;
+            this.content = content;
+            notifyAll();
+        }
+        
+        void waitReady() {
+            while (status != READY) {
+                Display.getInstance().invokeAndBlock(()->{
+                    synchronized(BrowserStatus.this) {
+                        Util.wait(BrowserStatus.this, 2000);
+                    }
+                });
+            }
+        }
+        
+        Map<String,Object> getJSONContent() throws IOException {
+            JSONParser p = new JSONParser();
+            String c = content.substring(content.indexOf("{"), content.lastIndexOf("}")+1);
+            return p.parseJSON(new InputStreamReader(new ByteArrayInputStream(c.getBytes("UTF-8")), "UTF-8"));
+        }
+    }
+    
+    private void testCookiesInBrowserComponent() throws IOException {
+        Cookie.clearCookiesFromStorage();
+        Form f = new Form("CookiesInBrowser");
+        String formName = "CookiesInBrowser";
+        f.setName(formName);
+        f.setLayout(new BorderLayout());
+        BrowserComponent bc = new BrowserComponent();
+        f.add(BorderLayout.CENTER, bc);
+        f.show();
+        TestUtils.waitForFormName(formName, 2000);
+        String baseUrl = "http://solutions.weblite.ca/cn1tests/cookie";
+        String clearCookiesUrl = baseUrl +"/reset.php";
+        String setCookiesUrl = baseUrl + "/set.php";
+        String checkCookiesUrl = baseUrl + "/check.php";
+        String setCookiesUrlSession = baseUrl + "/set_session.php";
+        
+        
+        
+        final BrowserStatus status = new BrowserStatus(bc);
+        bc.setURL(clearCookiesUrl);
+        status.waitReady();
+        status.reset();
+        bc.setURL(checkCookiesUrl);
+        status.waitReady();
+        Map<String,Object> res = status.getJSONContent();
+        TestUtils.assertBool(null == res.get("cookieval"), "Cookie should be null after clearing cookies but was "+res.get("cookieval"));
+        status.reset();
+        bc.setURL(setCookiesUrl);
+        status.waitReady();
+        status.reset();
+        bc.setURL(checkCookiesUrl);
+        status.waitReady();
+        res = status.getJSONContent();
+        
+        TestUtils.assertEqual("hello", res.get("cookieval"), "Cookie set to incorrect value.");
+        status.reset();
+        bc.setURL(clearCookiesUrl);
+        status.waitReady();
+        status.reset();
+        bc.setURL(checkCookiesUrl);
+        status.waitReady();
+        res = status.getJSONContent();
+        TestUtils.assertBool(null == res.get("cookieval"), "Cookie should be null after clearing cookies but was "+res.get("cookieval"));
+        status.reset();
+        
+        bc.setURL(setCookiesUrlSession);
+        status.waitReady();
+        
+        status.reset();
+        bc.setURL(checkCookiesUrl);
+        status.waitReady();
+        res = status.getJSONContent();
         TestUtils.assertEqual("hello", res.get("cookieval"), "Cookie set to incorrect value.");
         
         
