@@ -18,6 +18,10 @@ public class TestPicker extends AbstractTest {
     @Override
     public boolean runTest() throws Exception {
         testDurationPicker();
+        testTimePicker();
+        testStringsPicker();
+        testDatePicker();
+        testDateTimePicker();
         return true;
     }
     
@@ -50,6 +54,28 @@ public class TestPicker extends AbstractTest {
         
         picker.setDuration(1, 0);
         TestUtils.assertEqual("1 hour", picker.getText(), "Incorrect picker text when setting to 1 hour");
+    }
+    
+    private void testTimePicker() {
+        Picker p = new Picker();
+        p.setType(Display.PICKER_TYPE_TIME);
+        
+    }
+    
+    private void testDatePicker() {
+        Picker p = new Picker();
+        p.setType(Display.PICKER_TYPE_DATE);
+        
+    }
+    
+    private void testStringsPicker() {
+        Picker p = new Picker();
+        p.setType(Display.PICKER_TYPE_STRINGS);
+    }
+    
+    private void testDateTimePicker() {
+        Picker p = new Picker();
+        p.setType(Display.PICKER_TYPE_DATE_AND_TIME);
     }
 
     @Override
