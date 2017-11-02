@@ -52,6 +52,19 @@ $ cn1 test -seJar /path/to/JavaSE.jar \
            -cldcJar /path/to/CLDC11.jar
 ----
 
+== Running on Device
+
+IMPORTANT: Running tests on device requires a Codename One Enterprise account.
+
+.Running on Android device
+[source,bash]
+----
+$ cd cn1-unit-tests
+$ cn1 test -t android
+----
+
+NOTE: For more options, such as specifying which device/emulator to run on, signing options, building against sources, see https://github.com/shannah/codenameone-cli/wiki/test#running-on-android[running on android docs for the cn1 command].
+
 == Error Reports and Verbose Logging
 
 Use the `-e` flag to show the stack trace when a test fails.  Use the `-v` flag to show verbose logging.
@@ -75,4 +88,3 @@ This is a community project, so it is my hope that others will add their own tes
 ----
 
 Once you have finished your changes, you should commit a pull request to have them merged into the master branch.
-
