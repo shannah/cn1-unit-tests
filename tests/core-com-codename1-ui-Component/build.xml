@@ -159,6 +159,24 @@
             automated="${automated}"
             />
     </target>
+    <target name="test-for-android-device-debug" description="Test on Android Device locally" depends="clean,copy-android-override,copy-libs,compile-test,clean-override">
+        <codeNameOne 
+            jarFile="dist/unitTests.jar"
+            displayName="${codename1.displayName}"
+            packageName = "${codename1.packageName}"
+            mainClassName = "${codename1.mainName}"
+            version="${codename1.version}"
+            icon="${codename1.icon}"
+            vendor="${codename1.vendor}"
+            subtitle="${codename1.secondaryTitle}"
+            buildArgs="build.unitTest=1"
+            targetType="debug_android_steve"
+            keystoreAlias="${codename1.android.keystoreAlias}"
+            keystore="${codename1.android.keystore}"
+            certPassword="${codename1.android.keystorePassword}"
+            automated="${automated}"
+            />
+    </target>
 
     <target name="test-for-rim-device" depends="clean,copy-rim-override,copy-libs,compile-test,clean-override">
         <codeNameOne 
