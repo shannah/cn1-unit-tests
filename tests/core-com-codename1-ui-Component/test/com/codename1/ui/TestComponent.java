@@ -16,6 +16,7 @@ import com.codename1.testing.AbstractTest;
 import com.codename1.testing.TestUtils;
 import static com.codename1.ui.ComponentSelector.$;
 import com.codename1.ui.events.ActionEvent;
+import com.codename1.ui.events.ActionListener;
 import com.codename1.ui.layouts.BorderLayout;
 import com.codename1.ui.layouts.BoxLayout;
 import com.codename1.ui.layouts.LayeredLayout;
@@ -39,6 +40,7 @@ public class TestComponent extends AbstractTest {
         List_shouldRenderSelection();
         testCookies();
         testCookiesInBrowserComponent();
+        testBrowserComponent2267();
        
         return true;
     }
@@ -409,6 +411,62 @@ public class TestComponent extends AbstractTest {
         res = status2.getJSONContent();
         TestUtils.assertEqual("hello", res.get("cookieval"), "Cookie set to incorrect value.");
         
+    }
+    // Test for https://github.com/codenameone/CodenameOne/issues/2267
+    private void testBrowserComponent2267() {
+        Form hi = new Form();
+        String formName = "testBrowserComponent2267";
+        hi.setName(formName);
+        hi.setLayout(new BorderLayout());
+
+        BrowserComponent browserComponent = new BrowserComponent();
+        hi.add(BorderLayout.CENTER, browserComponent);
+
+        final Throwable[] ex = new Throwable[1];
+        final boolean[] complete = new boolean[1];
+        Button loadButton = new Button("setUrl");
+        String buttonName = "setUrl";
+        loadButton.setName(buttonName);
+        loadButton.addActionListener((ev) -> {
+                ActionListener errorHandler = new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        e.consume();
+                        ex[0] = (Throwable)e.getSource();
+                        complete[0] = true;
+                        Display.getInstance().removeEdtErrorHandler(this);
+                    }
+                };
+                try {
+                    
+                    
+                    Display.getInstance().addEdtErrorHandler(errorHandler);
+                    browserComponent.addWebEventListener("onLoad", e-> {
+                        Display.getInstance().removeEdtErrorHandler(errorHandler);
+                        complete[0] = true;
+                    });
+                    browserComponent.setURL("https://www.google.es");
+                } catch (Throwable t) {
+                    ex[0] = t;
+                    complete[0] = true;
+                    Display.getInstance().removeEdtErrorHandler(errorHandler);
+                } finally {
+                    //complete[0] = true;
+                }
+        });
+        hi.add(BorderLayout.SOUTH, loadButton);
+        hi.show();
+        TestUtils.waitForFormName(formName, 2000);
+        TestUtils.clickButtonByName(buttonName);
+        while (!complete[0]) {
+            Display.getInstance().invokeAndBlock(()->{
+                Util.sleep(50);
+            });
+        }
+        String message = null;
+        if (ex[0] != null) {
+            message = ex[0].getMessage();
+        }
+        TestUtils.assertBool(ex[0] == null, "We received an exception setting the browserComponent URL: "+message);
     }
     
 }
