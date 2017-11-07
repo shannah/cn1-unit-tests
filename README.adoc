@@ -6,9 +6,15 @@ This repository stores a collection of unit test for https://www.codenameone.com
 
 === Desktop (JavaSE/Simulator)
 
+This unit test suite is automatically run every time a commit occurs on the https://github.com/codenameone/CodenameOne[CodenameOne] repository.
+
 image:https://travis-ci.org/codenameone/CodenameOne.svg?branch=master["Build Status", link="https://travis-ci.org/codenameone/CodenameOne"]
 
 === Android
+
+Android unit tests are run nightly for all of the android versions listed below.  Tests are run by Travis-CI on the https://github.com/shannah/cn1-unit-tests-android[cn1-unit-tests-android] repository.  That repository includes separate branches for each
+version of Android.  Branches are named according to the API level of the Android emulator used for the test in that branch.  E.g. The branch named "22" has a travis script
+that runs the unit tests against Android 5.1 (API Level 22).
 
 . 5.1 (API Level 22) : image:https://travis-ci.org/shannah/cn1-unit-tests-android.svg?branch=22["Build Status", link="https://travis-ci.org/shannah/cn1-unit-tests-android"]
 . 5.0 (API Level 21) : image:https://travis-ci.org/shannah/cn1-unit-tests-android.svg?branch=21["Build Status", link="https://travis-ci.org/shannah/cn1-unit-tests-android"]
