@@ -2,6 +2,34 @@
 
 This repository stores a collection of unit test for https://www.codenameone.com[Codename One].
 
+== Test Status
+
+=== Desktop (JavaSE/Simulator)
+
+image:https://travis-ci.org/codenameone/CodenameOne.svg?branch=master["Build Status", link="https://travis-ci.org/codenameone/CodenameOne"]
+
+=== Android
+
+. 5.1 (API Level 22) : image:https://travis-ci.org/shannah/cn1-unit-tests-android.svg?branch=22["Build Status", link="https://travis-ci.org/shannah/cn1-unit-tests-android"]
+. 5.0 (API Level 21) : image:https://travis-ci.org/shannah/cn1-unit-tests-android.svg?branch=21["Build Status", link="https://travis-ci.org/shannah/cn1-unit-tests-android"]
+. 4.4 (API Level 19) : image:https://travis-ci.org/shannah/cn1-unit-tests-android.svg?branch=19["Build Status", link="https://travis-ci.org/shannah/cn1-unit-tests-android"]
+. 4.3 (API Level 18) : image:https://travis-ci.org/shannah/cn1-unit-tests-android.svg?branch=18["Build Status", link="https://travis-ci.org/shannah/cn1-unit-tests-android"]
+. 4.2 (API Level 17) : image:https://travis-ci.org/shannah/cn1-unit-tests-android.svg?branch=17["Build Status", link="https://travis-ci.org/shannah/cn1-unit-tests-android"]
+. 4.1 (API Level 16) : image:https://travis-ci.org/shannah/cn1-unit-tests-android.svg?branch=16["Build Status", link="https://travis-ci.org/shannah/cn1-unit-tests-android"]
+. 4.0 (API Level 15) : image:https://travis-ci.org/shannah/cn1-unit-tests-android.svg?branch=15["Build Status", link="https://travis-ci.org/shannah/cn1-unit-tests-android"]
+
+=== iOS
+
+iOS automated tests coming soon.
+
+=== Javascript
+
+Javascript automated tests coming soon.
+
+=== UWP/Windows 10
+
+UWP/Windows 10 automated tests coming soon.
+
 == Quick Start
 
 Install the latest Codename One CLI tools
