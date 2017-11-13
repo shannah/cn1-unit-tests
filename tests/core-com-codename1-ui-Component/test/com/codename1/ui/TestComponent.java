@@ -41,7 +41,11 @@ public class TestComponent extends AbstractTest {
         testCookies();
         testCookiesInBrowserComponent();
         testBrowserComponent2267();
-       
+        //testSideMenuCloseNPE(false, false);
+        testSideMenuCloseNPE(false, true);
+        //testSideMenuCloseNPE(false, true);
+        //testSideMenuCloseNPE(true, false);
+        testSideMenuCloseNPE(true, true);
         return true;
     }
 
@@ -469,4 +473,88 @@ public class TestComponent extends AbstractTest {
         TestUtils.assertBool(ex[0] == null, "We received an exception setting the browserComponent URL: "+message);
     }
     
+    
+    // Test to reproduce NPE reported here:
+    // https://stackoverflow.com/questions/47141271/codename1-nullpointerexception-after-update
+    // Initial fix did not fix case where global toolbar is false. 
+    // https://github.com/codenameone/CodenameOne/commit/2c7ad31b9542dd8bbff2ab00c5a4b0728efa9d0c
+    // 
+    private void testSideMenuCloseNPE(boolean globalToolbar, boolean onTopSideMenu) {
+        System.out.println("Testing SideMenuNPE with globalToolbar="+globalToolbar+"; onTopSideMenu="+onTopSideMenu);
+        boolean globalToolbarSetting = Toolbar.isGlobalToolbar();
+        boolean onTopSideMenuSetting = Toolbar.isOnTopSideMenu();
+        int commandBehaviour = Display.getInstance().getCommandBehavior();
+        Toolbar.setGlobalToolbar(globalToolbar);
+        
+        Toolbar.setOnTopSideMenu(onTopSideMenu);
+        Display.getInstance().setCommandBehavior(Display.COMMAND_BEHAVIOR_SIDE_NAVIGATION);
+        try {
+            
+            Form reset = new Form("Reset");
+            reset.setName("Reset");
+            reset.show();
+            TestUtils.waitForFormName("Reset");
+            Form home = new Form("Home");
+            home.setName("Home");
+            Toolbar homeTb = new Toolbar();
+            //if (!globalToolbar){
+                home.setToolbar(homeTb);
+                TestUtils.assertEqual(homeTb, home.getToolbar(), "getToolbar() returned wrong toolbar");
+            //}
+            
+            Form form1 = new Form("Form1");
+            form1.setName("Form1");
+            form1.setToolbar(new Toolbar());
+            
+            
+            //Add navigation commands to the home Form
+            NavigationCommand homeCommand = new NavigationCommand("Home");
+            homeCommand.setNextForm(home);
+            home.getToolbar().addCommandToSideMenu(homeCommand);
+
+            NavigationCommand cmd1 = new NavigationCommand("Form1");
+            cmd1.setNextForm(form1);
+            home.getToolbar().addCommandToSideMenu(cmd1);
+            
+            home.show();
+            
+            TestUtils.waitForFormName("Home");
+            home.getToolbar().openSideMenu();
+            TestUtils.waitFor(500); // wait for side menu to open
+            
+            Button cmd1Btn;
+            
+            if (Toolbar.isOnTopSideMenu()) {
+                cmd1Btn = $("SideCommand", home)
+                        .filter(c->{
+                            return "Form1".equals(((Button)c).getText());
+                        }).asComponent(Button.class);
+            } else {
+                System.out.println(home.getToolbar().getMenuBar());
+                cmd1Btn = $("SideCommand", home.getToolbar().getMenuBar())
+                        .filter(c->{
+                            return "Form1".equals(((Button)c).getText());
+                        })
+                        .asComponent(Button.class);
+            }
+            
+            Button c = cmd1Btn;
+            System.out.println(c);
+            int actualX = c.getAbsoluteX() + (int)(0.5f * c.getWidth());
+            int actualY = c.getAbsoluteY() + (int)(0.5f * c.getHeight());
+            Display.getInstance().getCurrent().pointerPressed(actualX, actualY);
+            Display.getInstance().getCurrent().pointerReleased(actualX, actualY);
+            TestUtils.waitForFormName("Form1");
+            //home.getToolbar().getMenuBar().actionPerformed(new ActionEvent(home));
+            
+            
+
+            //home.getToolbar().sho
+            
+        } finally {
+            Toolbar.setGlobalToolbar(globalToolbarSetting);
+            Display.getInstance().setCommandBehavior(commandBehaviour);
+            Toolbar.setOnTopSideMenu(onTopSideMenuSetting);
+        }
+    }
 }
