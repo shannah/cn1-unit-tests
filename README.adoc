@@ -1,5 +1,8 @@
 == Codename One Unit Tests
 
+NOTE: THIS REPOSITORY IS NO LONGER USED.  CODENAME ONE UNIT TESTS HAVE BEEN MOVED DIRECTLY INTO THE MAIN CODENAME ONE REPOSITORY
+
+
 This repository stores a collection of unit test for https://www.codenameone.com[Codename One].
 
 == Test Status
